@@ -21,6 +21,9 @@ import pl.mrstudios.deathrun.api.arena.user.IUser;
 import pl.mrstudios.deathrun.api.arena.user.enums.Role;
 import pl.mrstudios.deathrun.config.Configuration;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
@@ -210,8 +213,14 @@ public class ArenaServiceRunnable extends BukkitRunnable {
 
     protected void stateSwitchToPlaying() {
 
-        for (int i = 0; i < this.configuration.plugin().arenaDeathsAmount; i++)
-            this.arena.getUsers().get(ThreadLocalRandom.current().nextInt(this.arena.getUsers().size())).setRole(DEATH);
+        // Shuffle pemain agar pemilihan Death acak tanpa duplikat
+        List<IUser> shuffled = new ArrayList<>(this.arena.getUsers());
+        Collections.shuffle(shuffled);
+
+        // Clamp jumlah Death agar minimal selalu ada 1 Runner
+        int deathCount = Math.min(this.configuration.plugin().arenaDeathsAmount, shuffled.size() - 1);
+        for (int i = 0; i < deathCount; i++)
+            shuffled.get(i).setRole(DEATH);
 
         this.arena.getUsers()
                 .stream()
@@ -365,18 +374,13 @@ public class ArenaServiceRunnable extends BukkitRunnable {
 
         this.arena.setSidebar(newAdventureSidebar(miniMessage().deserialize(this.configuration.language().arenaScoreboardTitle), this.plugin));
 
-        switch (this.arena.getGameState()) {
-
-            case WAITING ->
-                    this.configuration.language().arenaScoreboardLinesWaiting.forEach(this::addLine);
-
-            case STARTING ->
-                    this.configuration.language().arenaScoreboardLinesStarting.forEach(this::addLine);
-
-            case PLAYING ->
-                    this.configuration.language().arenaScoreboardLinesPlaying.forEach(this::addLine);
-
-        }
+        // BUG-1 fix: gunakan if-else agar hanya satu set baris yang ditambahkan
+        if (this.arena.getGameState() == WAITING)
+            this.configuration.language().arenaScoreboardLinesWaiting.forEach(this::addLine);
+        else if (this.arena.getGameState() == STARTING)
+            this.configuration.language().arenaScoreboardLinesStarting.forEach(this::addLine);
+        else if (this.arena.getGameState() == PLAYING)
+            this.configuration.language().arenaScoreboardLinesPlaying.forEach(this::addLine);
 
         this.arena.getUsers()
                 .stream()

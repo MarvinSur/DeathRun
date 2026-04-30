@@ -8,15 +8,15 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: 'actions/checkout@v4'
-      - name: 'Install Java Development Kit (17)'
+      - name: 'Install Java Development Kit (21)'
         uses: 'actions/setup-java@v4'
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - name: 'Assign Permissions'
         run: 'chmod +x ./gradlew'
       - name: 'Build (Gradle)'
-        run: './gradlew core:build'
+        run: './gradlew api:build core:build'
       - name: 'Upload (API)'
         uses: 'actions/upload-artifact@v4'
         with:

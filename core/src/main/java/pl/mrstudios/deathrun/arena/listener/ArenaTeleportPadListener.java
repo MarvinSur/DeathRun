@@ -6,21 +6,28 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 import pl.mrstudios.commons.inject.annotation.Inject;
+import pl.mrstudios.deathrun.api.arena.user.IUser;
+import pl.mrstudios.deathrun.arena.Arena;
 import pl.mrstudios.deathrun.config.Configuration;
 
 import static java.util.Arrays.stream;
 import static org.bukkit.Material.*;
 import static org.bukkit.event.EventPriority.MONITOR;
 import static org.bukkit.event.block.Action.PHYSICAL;
+import static pl.mrstudios.deathrun.api.arena.enums.GameState.PLAYING;
+import static pl.mrstudios.deathrun.api.arena.user.enums.Role.RUNNER;
 
 public class ArenaTeleportPadListener implements Listener {
 
+    private final Arena arena;
     private final Configuration configuration;
 
     @Inject
     public ArenaTeleportPadListener(
+            @NotNull Arena arena,
             @NotNull Configuration configuration
     ) {
+        this.arena = arena;
         this.configuration = configuration;
     }
 
@@ -44,7 +51,15 @@ public class ArenaTeleportPadListener implements Listener {
                                 && teleportPad.padLocation().getBlockY() == event.getClickedBlock().getY()
                                 && teleportPad.padLocation().getBlockZ() == event.getClickedBlock().getZ()
                 ).findFirst().ifPresent(
-                        (teleportPad) -> event.getPlayer().teleport(teleportPad.teleportLocation())
+                        (teleportPad) -> {
+                            // BUG-4 fix: hanya Runner yang boleh pakai teleport pad, dan hanya saat PLAYING
+                            if (this.arena.getGameState() != PLAYING)
+                                return;
+                            IUser user = this.arena.getUser(event.getPlayer());
+                            if (user == null || user.getRole() != RUNNER)
+                                return;
+                            event.getPlayer().teleport(teleportPad.teleportLocation());
+                        }
                 );
 
     }

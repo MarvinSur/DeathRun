@@ -1,0 +1,13 @@
+# Plugin Information
+name: 'DeathRun'
+description: 'An minigame based on popular game from HiveMC server.'
+version: '${version}'
+
+# Dependencies
+softdepend:
+  - 'WorldEdit'
+
+# Plugin Data
+load: 'POSTWORLD'
+api-version: '1.16'
+main: 'pl.mrstudios.deathrun.plugin.Entrypoint'

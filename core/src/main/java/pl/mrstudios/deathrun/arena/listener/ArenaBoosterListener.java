@@ -59,6 +59,10 @@ public class ArenaBoosterListener implements Listener {
         if (event.getAction() == PHYSICAL)
             return;
 
+        // BUG-7 fix: booster hanya bisa dipakai saat game PLAYING
+        if (this.arena.getGameState() != PLAYING)
+            return;
+
         this.configuration.plugin().boosters
                 .stream()
                 .filter((booster) -> event.getPlayer().getInventory().getItem(booster.slot()) != null)

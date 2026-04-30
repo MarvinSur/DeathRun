@@ -12,7 +12,6 @@ import pl.mrstudios.deathrun.arena.Arena;
 import pl.mrstudios.deathrun.config.Configuration;
 
 import static java.lang.String.valueOf;
-import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 import static org.bukkit.event.EventPriority.MONITOR;
@@ -53,18 +52,24 @@ public class ArenaPlayerQuitListener implements Listener {
                 .stream().peek(this.arena.getUsers()::remove)
                 .findFirst().ifPresent((user) -> {
 
+                    // Selalu hapus viewer dari sidebar ketika player quit
+                    if (this.arena.getSidebar() != null)
+                        this.arena.getSidebar().removeViewer(event.getPlayer());
+
                     if (this.arena.getGameState() != WAITING && this.arena.getGameState() != STARTING)
                         return;
 
-                    this.arena.getUsers().forEach((target) ->
-                            this.audiences.player(requireNonNull(target.asBukkit())).sendMessage(miniMessage().deserialize(
-                                    this.configuration.language().chatMessageArenaPlayerLeft
-                                            .replace("<player>", event.getPlayer().getDisplayName())
-                                            .replace("<currentPlayers>", valueOf(this.arena.getUsers().size()))
-                                            .replace("<maxPlayers>", valueOf(this.configuration.map().arenaRunnerSpawnLocations.size() + this.configuration.map().arenaDeathSpawnLocations.size()))
-                            )));
+                    // BUG-2 fix: filter null agar tidak NPE jika ada player offline lain
+                    this.arena.getUsers().stream()
+                            .filter((target) -> target.asBukkit() != null)
+                            .forEach((target) ->
+                                    this.audiences.player(target.asBukkit()).sendMessage(miniMessage().deserialize(
+                                            this.configuration.language().chatMessageArenaPlayerLeft
+                                                    .replace("<player>", event.getPlayer().getDisplayName())
+                                                    .replace("<currentPlayers>", valueOf(this.arena.getUsers().size()))
+                                                    .replace("<maxPlayers>", valueOf(this.configuration.map().arenaRunnerSpawnLocations.size() + this.configuration.map().arenaDeathSpawnLocations.size()))
+                                    )));
 
-                    this.arena.getSidebar().removeViewer(event.getPlayer());
                     this.server.getPluginManager().callEvent(new ArenaUserLeftEvent(user, this.arena));
 
                 });

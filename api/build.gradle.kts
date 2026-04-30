@@ -18,7 +18,7 @@ project.group = project.parent?.group!!
 project.version = project.parent?.version!!
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 blossom {

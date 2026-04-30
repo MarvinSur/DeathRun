@@ -96,7 +96,19 @@ public class ArenaButtonClickListener implements Listener {
                     });
 
                     this.server.getScheduler().scheduleSyncDelayedTask(this.plugin, trap::end, trap.getDuration().toMillis() / 50L);
-                    this.server.getScheduler().scheduleSyncRepeatingTask(this.plugin, () -> {
+
+                    // BUG-6 fix: simpan task ID agar bisa di-cancel ketika game berakhir
+                    int[] hologramTaskId = {-1};
+                    hologramTaskId[0] = this.server.getScheduler().scheduleSyncRepeatingTask(this.plugin, () -> {
+
+                        // Cancel otomatis jika game sudah tidak PLAYING
+                        if (this.arena.getGameState() != pl.mrstudios.deathrun.api.arena.enums.GameState.PLAYING) {
+                            armorStand.remove();
+                            this.delays.remove(trap);
+                            if (hologramTaskId[0] != -1)
+                                this.server.getScheduler().cancelTask(hologramTaskId[0]);
+                            return;
+                        }
 
                         if (currentTimeMillis() < this.delays.getOrDefault(trap, 0L))
                             armorStand.setCustomName(
@@ -111,6 +123,8 @@ public class ArenaButtonClickListener implements Listener {
 
                         armorStand.remove();
                         this.delays.remove(trap);
+                        if (hologramTaskId[0] != -1)
+                            this.server.getScheduler().cancelTask(hologramTaskId[0]);
 
                     }, 0, 20L);
 

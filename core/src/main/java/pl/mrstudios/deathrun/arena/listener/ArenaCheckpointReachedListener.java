@@ -64,12 +64,13 @@ public class ArenaCheckpointReachedListener implements Listener {
         if (event.getTo().getBlock().getType() != NETHER_PORTAL)
             return;
 
+        // BUG-9 fix: gunakan || agar salah satu rotasi saja sudah cukup untuk skip (hanya noleh)
         if (
                 event.getFrom().getBlockX() == event.getTo().getBlockX()
                         && event.getFrom().getBlockY() == event.getTo().getBlockY()
                         && event.getFrom().getBlockZ() == event.getTo().getBlockZ()
-                        && event.getFrom().getPitch() != event.getTo().getPitch()
-                        && event.getFrom().getYaw() != event.getTo().getYaw()
+                        && (event.getFrom().getPitch() != event.getTo().getPitch()
+                        || event.getFrom().getYaw() != event.getTo().getYaw())
         ) return;
 
         this.configuration.map().arenaCheckpoints.stream()

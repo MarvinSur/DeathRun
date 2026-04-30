@@ -16,7 +16,6 @@ import pl.mrstudios.deathrun.config.Configuration;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.String.valueOf;
-import static java.util.Objects.requireNonNull;
 import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 import static org.bukkit.GameMode.ADVENTURE;
 import static org.bukkit.Material.RED_BED;
@@ -63,13 +62,17 @@ public class ArenaPlayerJoinListener implements Listener {
         User user = new User(event.getPlayer());
 
         this.arena.getUsers().add(user);
-        this.arena.getUsers().forEach((target) ->
-                this.audiences.player(requireNonNull(target.asBukkit())).sendMessage(miniMessage().deserialize(
-                        this.configuration.language().chatMessageArenaPlayerJoined
-                                .replace("<player>", event.getPlayer().getDisplayName())
-                                .replace("<currentPlayers>", valueOf(this.arena.getUsers().size()))
-                                .replace("<maxPlayers>", valueOf(this.configuration.map().arenaRunnerSpawnLocations.size() + this.configuration.map().arenaDeathSpawnLocations.size()))
-                )));
+
+        // BUG-2 fix: filter null agar tidak NPE jika ada player offline saat broadcast join
+        this.arena.getUsers().stream()
+                .filter((target) -> target.asBukkit() != null)
+                .forEach((target) ->
+                        this.audiences.player(target.asBukkit()).sendMessage(miniMessage().deserialize(
+                                this.configuration.language().chatMessageArenaPlayerJoined
+                                        .replace("<player>", event.getPlayer().getDisplayName())
+                                        .replace("<currentPlayers>", valueOf(this.arena.getUsers().size()))
+                                        .replace("<maxPlayers>", valueOf(this.configuration.map().arenaRunnerSpawnLocations.size() + this.configuration.map().arenaDeathSpawnLocations.size()))
+                        )));
 
         event.getPlayer().getActivePotionEffects()
                 .stream()
@@ -82,7 +85,9 @@ public class ArenaPlayerJoinListener implements Listener {
         event.getPlayer().addPotionEffect(new PotionEffect(SATURATION, MAX_VALUE, 1, false, false, false));
         event.getPlayer().addPotionEffect(new PotionEffect(NIGHT_VISION, MAX_VALUE, 1, false, false, false));
 
-        this.arena.getSidebar().addViewer(event.getPlayer());
+        // BUG-8 fix: cek sidebar tidak null sebelum addViewer
+        if (this.arena.getSidebar() != null)
+            this.arena.getSidebar().addViewer(event.getPlayer());
         this.server.getPluginManager().callEvent(new ArenaUserJoinedEvent(user, this.arena));
 
         event.getPlayer().getInventory().setItem(
