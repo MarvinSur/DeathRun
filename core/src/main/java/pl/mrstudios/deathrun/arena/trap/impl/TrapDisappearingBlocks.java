@@ -27,6 +27,9 @@ public class TrapDisappearingBlocks extends Trap {
 
     @Override
     public void start() {
+        // BUG-12 fix: jika trap masih aktif (backup tidak kosong), skip agar block tidak corrupt
+        if (!this.backup.isEmpty())
+            return;
         super.locations.forEach((location) -> {
             this.backup.put(location, location.getBlock().getBlockData());
             location.getBlock().setType(AIR);

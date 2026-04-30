@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.lang.String.valueOf;
@@ -227,11 +226,12 @@ public class ArenaServiceRunnable extends BukkitRunnable {
                 .filter((user) -> user.getRole() != DEATH)
                 .forEach((user) -> user.setRole(RUNNER));
 
-        range(0, this.arena.getRunners().size())
+        // BUG-11 fix: clamp range agar tidak IndexOutOfBoundsException kalau spawn locations kurang dari jumlah player
+        range(0, Math.min(this.arena.getRunners().size(), this.configuration.map().arenaRunnerSpawnLocations.size()))
                 .filter((i) -> this.arena.getRunners().get(i).asBukkit() != null)
                 .forEach((i) -> requireNonNull(this.arena.getRunners().get(i).asBukkit()).teleport(this.configuration.map().arenaRunnerSpawnLocations.get(i)));
 
-        range(0, this.arena.getDeaths().size())
+        range(0, Math.min(this.arena.getDeaths().size(), this.configuration.map().arenaDeathSpawnLocations.size()))
                 .filter((i) -> this.arena.getDeaths().get(i).asBukkit() != null)
                 .forEach((i) -> requireNonNull(this.arena.getDeaths().get(i).asBukkit()).teleport(this.configuration.map().arenaDeathSpawnLocations.get(i)));
 

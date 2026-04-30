@@ -204,7 +204,12 @@ public class Entrypoint extends JavaPlugin {
 
         try {
 
-            stream(new File(this.getDataFolder(), "backup").listFiles())
+            // BUG-15 fix: listFiles() return null jika folder backup belum ada, stream(null) = NPE
+            File backupDir = new File(this.getDataFolder(), "backup");
+            if (!backupDir.exists() || backupDir.listFiles() == null)
+                return;
+
+            stream(backupDir.listFiles())
                     .filter((file) -> file.getName().endsWith(".zip"))
                     .forEach((file) -> {
 

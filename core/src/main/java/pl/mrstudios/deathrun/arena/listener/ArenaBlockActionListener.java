@@ -12,7 +12,6 @@ import pl.mrstudios.commons.inject.annotation.Inject;
 import static java.util.Arrays.stream;
 import static org.bukkit.Material.*;
 import static org.bukkit.event.EventPriority.MONITOR;
-import static org.bukkit.event.block.Action.PHYSICAL;
 import static org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK;
 
 public class ArenaBlockActionListener implements Listener {
@@ -39,13 +38,12 @@ public class ArenaBlockActionListener implements Listener {
             @NotNull PlayerInteractEvent event
     ) {
 
+        // BUG-13 fix: PHYSICAL tidak di-cancel di sini agar pressure plate (teleport pad) tetap bisa trigger.
+        // Hanya RIGHT_CLICK_BLOCK ke container yang diblokir.
         if (event.getAction() == RIGHT_CLICK_BLOCK)
             if (event.getClickedBlock() != null)
                 if (stream(containerMaterials).anyMatch((material) -> material == event.getClickedBlock().getType()))
                     event.setCancelled(true);
-
-        if (event.getAction() == PHYSICAL)
-            event.setCancelled(true);
 
     }
 

@@ -75,7 +75,8 @@ public class Arena implements IArena {
         return this.name;
     }
 
-    public @NotNull Sidebar<Component> getSidebar() {
+    // BUG-10 fix: sidebar bisa null, annotasi diubah ke @Nullable
+    public @Nullable Sidebar<Component> getSidebar() {
         return this.sidebar;
     }
 

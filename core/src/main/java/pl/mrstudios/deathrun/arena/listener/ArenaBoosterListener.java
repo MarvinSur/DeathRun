@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import pl.mrstudios.commons.bukkit.item.ItemBuilder;
 import pl.mrstudios.commons.inject.annotation.Inject;
 import pl.mrstudios.deathrun.api.arena.booster.IBooster;
+import pl.mrstudios.deathrun.api.arena.event.arena.ArenaGameStateChangeEvent;
 import pl.mrstudios.deathrun.api.arena.event.user.UserArenaUseBoosterEvent;
 import pl.mrstudios.deathrun.api.arena.user.IUser;
 import pl.mrstudios.deathrun.arena.Arena;
@@ -27,6 +28,7 @@ import static net.kyori.adventure.text.minimessage.MiniMessage.miniMessage;
 import static org.bukkit.event.EventPriority.MONITOR;
 import static org.bukkit.event.block.Action.PHYSICAL;
 import static org.bukkit.inventory.ItemFlag.values;
+import static pl.mrstudios.deathrun.api.arena.enums.GameState.ENDING;
 import static pl.mrstudios.deathrun.api.arena.enums.GameState.PLAYING;
 
 public class ArenaBoosterListener implements Listener {
@@ -49,6 +51,15 @@ public class ArenaBoosterListener implements Listener {
         this.plugin = plugin;
         this.server = server;
         this.configuration = configuration;
+    }
+
+    // BUG-14 fix: clear delay map saat game masuk state ENDING agar cooldown tidak carry-over
+    @EventHandler(priority = MONITOR)
+    public void onGameStateChange(
+            @NotNull ArenaGameStateChangeEvent event
+    ) {
+        if (event.getGameState() == ENDING)
+            this.delay.clear();
     }
 
     @EventHandler(priority = MONITOR)
@@ -162,6 +173,5 @@ public class ArenaBoosterListener implements Listener {
         }
 
     }
-
 
 }
