@@ -29,8 +29,7 @@ blossom {
 
 repositories {
     mavenCentral()
-    maven("https://repo.mrstudios.pl/public/")
-    maven("https://repo.mrstudios.pl/third-party/")
+    maven("https://jitpack.io")
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.panda-lang.org/releases/")
     maven("https://repo.opencollab.dev/maven-releases/")
@@ -53,10 +52,8 @@ dependencies {
     implementation("eu.okaeri:okaeri-configs-yaml-bukkit:${project.parent?.property("okaeri.configs.version")}")
     implementation("eu.okaeri:okaeri-configs-serdes-bukkit:${project.parent?.property("okaeri.configs.version")}")
 
-    /* Commons */
-    implementation("pl.mrstudios.commons:commons-bukkit:${project.parent?.property("mrstudios.commons.version")}")
-    implementation("pl.mrstudios.commons:commons-inject:${project.parent?.property("mrstudios.commons.version")}")
-    implementation("pl.mrstudios.commons:commons-reflection:${project.parent?.property("mrstudios.commons.version")}")
+    /* Commons (via JitPack dari fork MarvinSur/java-commons) */
+    implementation("com.github.MarvinSur:java-commons:${project.parent?.property("mrstudios.commons.version")}")
 
     /* Kyori Adventure */
     implementation("net.kyori:adventure-api:${project.parent?.property("kyori.adventure.version")}")
