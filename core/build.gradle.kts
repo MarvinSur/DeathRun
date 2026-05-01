@@ -69,8 +69,8 @@ dependencies {
     /* Zip4J */
     implementation("net.lingala.zip4j:zip4j:${project.parent?.property("zip4j.version")}")
 
-    /* Protocol Sidebar */
-    implementation("me.catcoder:bukkit-sidebar:${project.parent?.property("protocol.sidebar.version")}")
+    /* Protocol Sidebar (via JitPack dari CatCoderr/ProtocolSidebar) */
+    implementation("com.github.CatCoderr:ProtocolSidebar:${project.parent?.property("protocol.sidebar.version")}")
 
     /* WorldEdit */
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:${project.parent?.property("worldedit.version")}")
