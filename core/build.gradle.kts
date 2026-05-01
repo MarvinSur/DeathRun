@@ -27,6 +27,11 @@ blossom {
     replaceToken("{gitCommitHash}", versionDetails().gitHashFull)
 }
 
+// Pastikan SNAPSHOT dari JitPack selalu fresh, tidak di-cache
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor(0, "seconds")
+}
+
 repositories {
     mavenCentral()
     maven("https://jitpack.io")
@@ -70,7 +75,9 @@ dependencies {
     implementation("net.lingala.zip4j:zip4j:${project.parent?.property("zip4j.version")}")
 
     /* Protocol Sidebar (via JitPack dari CatCoderr/ProtocolSidebar) */
-    implementation("com.github.CatCoderr:ProtocolSidebar:${project.parent?.property("protocol.sidebar.version")}")
+    implementation("com.github.CatCoderr:ProtocolSidebar:${project.parent?.property("protocol.sidebar.version")}") {
+        isChanging = true
+    }
 
     /* WorldEdit */
     compileOnly("com.sk89q.worldedit:worldedit-bukkit:${project.parent?.property("worldedit.version")}")
