@@ -59,8 +59,10 @@ dependencies {
     implementation("eu.okaeri:okaeri-configs-yaml-bukkit:${project.parent?.property("okaeri.configs.version")}")
     implementation("eu.okaeri:okaeri-configs-serdes-bukkit:${project.parent?.property("okaeri.configs.version")}")
 
-    /* Commons (via JitPack dari fork MarvinSur/java-commons) */
-    implementation("com.github.MarvinSur:java-commons:${project.parent?.property("mrstudios.commons.version")}")
+    /* Commons (via JitPack multi-module dari fork MarvinSur/java-commons) */
+    implementation("com.github.MarvinSur.java-commons:commons-bukkit:${project.parent?.property("mrstudios.commons.version")}")
+    implementation("com.github.MarvinSur.java-commons:commons-inject:${project.parent?.property("mrstudios.commons.version")}")
+    implementation("com.github.MarvinSur.java-commons:commons-reflection:${project.parent?.property("mrstudios.commons.version")}")
 
     /* Kyori Adventure */
     implementation("net.kyori:adventure-api:${project.parent?.property("kyori.adventure.version")}")
