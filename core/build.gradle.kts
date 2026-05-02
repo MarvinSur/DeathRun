@@ -35,6 +35,8 @@ configurations.all {
 repositories {
     mavenCentral()
     maven("https://jitpack.io")
+    maven("https://repo.viaversion.com")
+    maven("https://repo.tcoded.com/releases")
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.panda-lang.org/releases/")
     maven("https://repo.opencollab.dev/maven-releases/")
