@@ -27,7 +27,6 @@ blossom {
     replaceToken("{gitCommitHash}", versionDetails().gitHashFull)
 }
 
-// Pastikan SNAPSHOT dari JitPack selalu fresh, tidak di-cache
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor(0, "seconds")
 }
@@ -59,8 +58,8 @@ dependencies {
     implementation("eu.okaeri:okaeri-configs-yaml-bukkit:${project.parent?.property("okaeri.configs.version")}")
     implementation("eu.okaeri:okaeri-configs-serdes-bukkit:${project.parent?.property("okaeri.configs.version")}")
 
-    /* Commons (via JitPack multi-module dari fork MarvinSur/java-commons) */
-    implementation("com.github.MarvinSur.java-commons:commons-bukkit:${project.parent?.property("mrstudios.commons.version")}")
+    /* Commons inject & reflection (via JitPack multi-module dari fork MarvinSur/java-commons) */
+    /* commons-bukkit di-inline ke source langsung (ItemBuilder.java) karena tidak ada di fork v2.0.1 */
     implementation("com.github.MarvinSur.java-commons:commons-inject:${project.parent?.property("mrstudios.commons.version")}")
     implementation("com.github.MarvinSur.java-commons:commons-reflection:${project.parent?.property("mrstudios.commons.version")}")
 
